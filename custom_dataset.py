@@ -27,6 +27,7 @@ class Samsum(Dataset):
         **kwargs
     ):
         super().__init__()
+        # Load data using datasets library (You can load data in other ways)
         data = datasets.load_dataset(data_path, split=split)
         
         # This prompt is the thing you enter when you talk to chatgpt

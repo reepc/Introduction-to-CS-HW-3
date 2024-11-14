@@ -13,16 +13,23 @@ def load_taide():
     tokenizer = AutoTokenizer.from_pretrained("taide/TAIDE-LX-7B-Chat")
     return model, tokenizer
 
-def load_llama(gguf_file_path: Union[os.PathLike, str]):
+def load_llama(gguf_file_path: Union[os.PathLike, str], using_llama_cpp: bool = True):
     """
-    You need to convert original llama model to .gguf format using this function
+    You need to convert original llama model to .gguf format using this function.
+    You also need to access the Llama models' access first.
     """
-    model = Llama(
-        model_path=gguf_file_path,
-        n_gpu_layers=-1, # Need you to change by yourself, if -1, all the layers will be offloaded to GPU
-        n_ctx=0,
-        chat_format="llama-3",
-        verbose=False,
-    )
+    if using_llama_cpp:
+        model = Llama(
+            model_path=gguf_file_path,
+            n_gpu_layers=-1, # Need you to change by yourself, if -1, all the layers will be offloaded to GPU
+            n_ctx=0,
+            chat_format="llama-3",
+            verbose=False,
+        )
     
-    return model
+        return model
+    
+    model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.2-3B-Instruct", device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-3B-Instruct")
+    
+    return model, tokenizer
